@@ -4,7 +4,7 @@ import {juggler} from '@loopback/repository';
 const config = {
   name: 'PocketTherapyDBO',
   connector: 'mssql',
-  url: 'mssql://JaredVelasquez_SQLLogin_1:1234@PocketTherapy.mssql.somee.com/PocketTherapy',
+  url: 'mssql://JaredVelasquez_SQLLogin_1:s3xt9pcs5d@PocketTherapy.mssql.somee.com/PocketTherapy',
   host: 'PocketTherapy.mssql.somee.com',
   port: 1433,
   user: 'JaredVelasquez_SQLLogin_1',
