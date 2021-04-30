@@ -4,12 +4,12 @@ import {juggler} from '@loopback/repository';
 const config = {
   name: 'PocketTherapyDBO',
   connector: 'mssql',
-  url: 'mssql://jared:1234@DESKTOP-914IUVT/Pocket_Therapy',
-  host: 'DESKTOP-914IUVT',
+  url: 'mssql://JaredVelasquez_SQLLogin_1:1234@PocketTherapy.mssql.somee.com/PocketTherapy',
+  host: 'PocketTherapy.mssql.somee.com',
   port: 1433,
-  user: 'jared',
-  password: '1234',
-  database: 'Pocket_Therapy'
+  user: 'JaredVelasquez_SQLLogin_1',
+  password: 's3xt9pcs5d',
+  database: 'PocketTherapy'
 };
 
 // Observe application's life cycle to disconnect the datasource when
