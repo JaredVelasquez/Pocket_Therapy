@@ -5,8 +5,8 @@ export * from './contact.repository';
 export * from './hashtag.repository';
 export * from './post.repository';
 export * from './preferences.repository';
-export * from './profile.repository';
+export * from './roles.repository';
 export * from './schedule.repository';
 export * from './task.repository';
 export * from './user.repository';
-export * from './roles.repository';
+

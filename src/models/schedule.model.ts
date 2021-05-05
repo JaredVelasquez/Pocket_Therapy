@@ -4,13 +4,22 @@ import {Entity, model, property} from '@loopback/repository';
 export class Schedule extends Entity {
   @property({
     type: 'number',
-    required: false,
+    required: true,
     precision: 10,
     scale: 0,
     id: 1,
-    mssql: {columnName: 'schedule_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'YES'},
+    mssql: {columnName: 'schedule_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
   })
-  scheduleId?: number;
+  scheduleId: number;
+
+  @property({
+    type: 'number',
+    required: true,
+    precision: 10,
+    scale: 0,
+    mssql: {columnName: 'user_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
+  })
+  userId: number;
 
   @property({
     type: 'string',
