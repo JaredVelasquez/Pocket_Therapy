@@ -28,8 +28,10 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
+import {Servicekeys as keys} from '../keys/services_keys';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
+import {EncryptDecrypt} from '../services/encrypt_decrypt.service';
 import {JwtService} from '../services/jwt.service';
 
 class Credentials {
@@ -86,7 +88,21 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<User> {
-    return this.userRepository.create(user);
+    let auxdocpas = user.passwordHash;
+    user.passwordHash = null;
+    user.status = "Active";
+    user.roleId = 2;
+
+    let password1 = new EncryptDecrypt(keys.MD5).Encrypt(auxdocpas);
+    let password2 = new EncryptDecrypt(keys.MD5).Encrypt(password1);
+    user.passwordHash = password2;
+
+    console.log(`Encript: ${password2}`);
+
+
+    let u = await this.userRepository.create(user);
+
+    return u;
   }
 
   @get('/users/count')

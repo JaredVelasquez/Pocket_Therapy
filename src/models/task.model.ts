@@ -4,22 +4,13 @@ import {Entity, model, property} from '@loopback/repository';
 export class Task extends Entity {
   @property({
     type: 'number',
-    required: false,
-    precision: 10,
-    scale: 0,
-    id: 1,
-    mssql: {columnName: 'task_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'YES'},
-  })
-  taskId?: number;
-
-  @property({
-    type: 'number',
     required: true,
     precision: 10,
     scale: 0,
-    mssql: {columnName: 'user_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
+    id: 1,
+    mssql: {columnName: 'task_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
   })
-  userId: number;
+  taskId: number;
 
   @property({
     type: 'number',

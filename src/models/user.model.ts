@@ -13,21 +13,80 @@ export class User extends Entity {
   userId?: number;
 
   @property({
+    type: 'number',
+    required: false,
+    precision: 10,
+    scale: 0,
+    mssql: {columnName: 'role_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'YES'},
+  })
+  roleId?: number;
+
+  @property({
+    type: 'string',
+    length: 150,
+    mssql: {columnName: 'photoUrl', dataType: 'nvarchar', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  photoUrl?: string;
+
+  @property({
     type: 'string',
     required: true,
     length: 50,
-    mssql: {columnName: 'profile_id', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    mssql: {columnName: 'firstName', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
   })
-  profileId: string;
+  firstName: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
-    precision: 10,
-    scale: 0,
-    mssql: {columnName: 'role_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
+    length: 50,
+    mssql: {columnName: 'lastName', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
   })
-  roleId: number;
+  lastName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    length: 50,
+    mssql: {columnName: 'emailprimary', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+  })
+  emailprimary: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mssql: {columnName: 'emailsecundary', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  emailsecundary?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mssql: {columnName: 'twiter', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  twiter?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mssql: {columnName: 'facebook', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  facebook?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mssql: {columnName: 'linkedin', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+  })
+  linkedin?: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    length: 50,
+    mssql: {columnName: 'phoneNumber', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+  })
+  phoneNumber: string;
 
   @property({
     type: 'string',
@@ -47,11 +106,11 @@ export class User extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
     length: 50,
-    mssql: {columnName: 'status', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    mssql: {columnName: 'status', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
   })
-  status: string;
+  status?: string;
 
   @property({
     type: 'date',
