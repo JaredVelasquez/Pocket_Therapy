@@ -44,7 +44,9 @@ export class JwtService {
     let user = await this.userRepository.findOne({where: {username: username}});
 
     console.log(`Username: ${user?.username} - Password: ${user?.password}`);
-
+    if (!user) {
+      user = await this.userRepository.findOne({where: {emailprimary: username}});
+    }
     if (user) {
       let cryptPass = new EncryptDecrypt(keys.LOGIN_CRUPT_METHOD).Encrypt(password);
       let cryptPassTwo = new EncryptDecrypt(keys.LOGIN_CRUPT_METHOD).Encrypt(cryptPass);
