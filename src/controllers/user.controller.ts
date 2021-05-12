@@ -39,6 +39,18 @@ class Credentials {
   password: string;
 }
 
+class PasswordResetData {
+  username: string;
+  phonenumber: string;
+  newpassword: string;
+}
+
+class ChangePasswordData {
+  id: string;
+  currentPassword: string;
+  newPassword: string;
+}
+
 export class UserController {
   jwtService: JwtService;
   constructor(
@@ -70,6 +82,25 @@ export class UserController {
     }
   }
 
+
+  @post('/password-reset', {
+    responses: {
+      '200': {
+        description: 'Login for users'
+      }
+    }
+  })
+  async reset(
+    @requestBody() passwordResetData: PasswordResetData
+  ): Promise<boolean> {
+    let newpassword = await this.jwtService.ResetPassword(passwordResetData.username, passwordResetData.newpassword)
+    console.log(newpassword);
+    if (newpassword) {
+      return true;
+    }
+    throw new HttpErrors[400]("User not found");
+  }
+
   @post('/users')
   @response(200, {
     description: 'User model instance',
@@ -93,11 +124,10 @@ export class UserController {
     user.status = "Active";
     user.roleId = 2;
 
-    let password1 = new EncryptDecrypt(keys.MD5).Encrypt(auxdocpas);
-    let password2 = new EncryptDecrypt(keys.MD5).Encrypt(password1);
-    user.passwordHash = password2;
+    let passwordEncripted = new EncryptDecrypt(keys.MD5).Encrypt(auxdocpas);
+    user.passwordHash = passwordEncripted;
 
-    console.log(`Encript: ${password2}`);
+    console.log(`Encript: ${passwordEncripted}`);
 
 
     let u = await this.userRepository.create(user);

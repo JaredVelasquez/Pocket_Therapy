@@ -7,13 +7,16 @@ export class EncryptDecrypt {
     this.type = type;
   }
 
-  Encrypt(text: string) {
+
+  Encrypt(password: string) {
     switch (this.type) {
       case keys.MD5:
-        return CryptoJS.MD5(text).toString();
+        let passwordEncriptOne = CryptoJS.MD5(password).toString();
+        let passwordEncriptTwo = CryptoJS.MD5(passwordEncriptOne).toString();
+        return passwordEncriptTwo;
         break;
       case keys.AES:
-        return CryptoJS.AES.encrypt(text, keys.AES_SECRET_KEY).toString();
+        return CryptoJS.AES.encrypt(password, keys.AES_SECRET_KEY).toString();
         break;
       default:
         return "This trype of Encrypt is not supported";
