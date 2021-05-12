@@ -48,15 +48,39 @@ export class JwtService {
       user = await this.userRepository.findOne({where: {emailprimary: username}});
     }
     if (user) {
-      let cryptPass = new EncryptDecrypt(keys.LOGIN_CRUPT_METHOD).Encrypt(password);
-      let cryptPassTwo = new EncryptDecrypt(keys.LOGIN_CRUPT_METHOD).Encrypt(cryptPass);
+      let cryptPass = new EncryptDecrypt(keys.LOGIN_CRYPT_METHOD).Encrypt(password);
 
       console.log(`cryptPass: ${cryptPass}`);
-      console.log(`cryptPass2: ${cryptPassTwo}`);
-      if (user.passwordHash == cryptPassTwo) {
+      if (user.passwordHash == cryptPass) {
         return user;
       }
     }
     return false;
   }
+
+  async ChangePassword(id: number, newpassword: string): Promise<Boolean> {
+    //console.log(`Username: ${username} - Password: ${password}`);
+    let user = await this.userRepository.findById(id);
+    if (user) {
+      let cryptPass = new EncryptDecrypt(keys.LOGIN_CRYPT_METHOD).Encrypt(newpassword);
+      user.password = cryptPass;
+      await this.userRepository.updateById(id, user);
+      return true;
+    }
+    return false;
+  }
+
+  async ResetPassword(username: string, newpassword: string): Promise<string | false> {
+    let user = await this.userRepository.findOne({where: {emailprimary: username}});
+    if (user) {
+      newpassword = new EncryptDecrypt(keys.LOGIN_CRYPT_METHOD).Encrypt(newpassword);
+      user.passwordHash = newpassword;
+      this.userRepository.replaceById(user?.userId, user);
+      return newpassword;
+    }
+    return false;
+  }
 }
+
+
+
