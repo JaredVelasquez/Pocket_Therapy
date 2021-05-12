@@ -7,6 +7,7 @@ export class EncryptDecrypt {
     this.type = type;
   }
 
+
   Encrypt(password: string) {
     switch (this.type) {
       case keys.MD5:
