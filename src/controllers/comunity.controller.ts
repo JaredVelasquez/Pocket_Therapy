@@ -155,5 +155,18 @@ export class ComunityController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.comunityRepository.deleteById(id);
+
+  }
+
+  @get('/ver-post-view')
+  async CommunityPost(): Promise<any> {
+    let datos: any[] = await this.getView();
+    return datos;
+  }
+
+  async getView() {
+    return await this.comunityRepository.dataSource.execute(
+      `SELECT * FROM dbo.GetCommunityPost`,
+    );
   }
 }
