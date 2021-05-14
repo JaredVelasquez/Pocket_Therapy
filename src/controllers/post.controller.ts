@@ -12,7 +12,7 @@ import {
   getModelSchemaRef, param,
 
 
-  patch, post,
+  patch,
 
 
 
@@ -43,41 +43,7 @@ export class PostController {
     public comunityRepository: ComunityRepository,
   ) { }
 
-  @post('/add-post', {
-    responses: {
-      '200': {
-        description: 'Add post of Usert on Community'
-      }
-    }
-  })
-  async login(
-    @requestBody() addpost: AddPost
-  ): Promise<object> {
-    let postId = shortid.generate();
 
-    let postModel = {
-      postId: postId,
-      contentPost: addpost.contentPost,
-      createdAt: addpost.createdAt,
-      updatedAt: addpost.updatedAt
-    };
-
-    let post = await this.postRepository.create(postModel);
-
-    let CommunityModel: any = {
-      hashtagId: addpost.hashtagid,
-      postId: postId,
-      userId: addpost.userid,
-      likeacnt: 0,
-      comentcnt: 0,
-      createdAt: addpost.createdAt,
-      updatedAt: addpost.updatedAt
-    };
-
-    let Community = await this.comunityRepository.create(CommunityModel);
-
-    return post;
-  }
 
 
   @authenticate.skip()
