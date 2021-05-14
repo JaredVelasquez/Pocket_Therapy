@@ -53,10 +53,7 @@ export class Contact extends Entity {
   })
   phoneNumberContact: string;
 
-  // Define well-known properties here
 
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
   constructor(data?: Partial<Contact>) {
@@ -65,7 +62,6 @@ export class Contact extends Entity {
 }
 
 export interface ContactRelations {
-  // describe navigational properties here
 }
 
 export type ContactWithRelations = Contact & ContactRelations;

@@ -52,10 +52,7 @@ export class Comment extends Entity {
   })
   updateAt: string;
 
-  // Define well-known properties here
 
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
   constructor(data?: Partial<Comment>) {
@@ -64,7 +61,6 @@ export class Comment extends Entity {
 }
 
 export interface CommentRelations {
-  // describe navigational properties here
 }
 
 export type CommentWithRelations = Comment & CommentRelations;

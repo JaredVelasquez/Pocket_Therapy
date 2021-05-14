@@ -28,7 +28,6 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
-import {Servicekeys as keys} from '../keys/services_keys';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
 import {EncryptDecrypt} from '../services/encrypt_decrypt.service';
@@ -93,8 +92,7 @@ export class UserController {
   async reset(
     @requestBody() passwordResetData: PasswordResetData
   ): Promise<boolean> {
-    let newpassword = await this.jwtService.ResetPassword(passwordResetData.username, passwordResetData.newpassword)
-    console.log(newpassword);
+    let newpassword = await this.jwtService.ResetPassword(passwordResetData.username, passwordResetData.newpassword);
     if (newpassword) {
       return true;
     }
@@ -124,7 +122,7 @@ export class UserController {
     user.status = "Active";
     user.roleId = 2;
 
-    let passwordEncripted = new EncryptDecrypt(keys.MD5).Encrypt(auxdocpas);
+    let passwordEncripted = new EncryptDecrypt().Encrypt(auxdocpas);
     user.passwordHash = passwordEncripted;
 
     console.log(`Encript: ${passwordEncripted}`);

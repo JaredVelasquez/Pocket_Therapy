@@ -50,10 +50,7 @@ export class Hashtag extends Entity {
   })
   createdBy: string;
 
-  // Define well-known properties here
 
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
   constructor(data?: Partial<Hashtag>) {
@@ -62,7 +59,6 @@ export class Hashtag extends Entity {
 }
 
 export interface HashtagRelations {
-  // describe navigational properties here
 }
 
 export type HashtagWithRelations = Hashtag & HashtagRelations;
