@@ -12,7 +12,7 @@ import {
   getModelSchemaRef, param,
 
 
-  patch, post,
+  patch,
 
 
 
@@ -23,35 +23,28 @@ import {
   response
 } from '@loopback/rest';
 import {Post} from '../models';
-import {PostRepository} from '../repositories';
+import {ComunityRepository, PostRepository} from '../repositories';
+const shortid = require('shortid');
+
+class AddPost {
+  hashtagid: string;
+  contentPost: string;
+  userid: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 @authenticate('admin', 'user')
 export class PostController {
   constructor(
     @repository(PostRepository)
     public postRepository: PostRepository,
+    @repository(ComunityRepository)
+    public comunityRepository: ComunityRepository,
   ) { }
 
-  @post('/posts')
-  @response(200, {
-    description: 'Post model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Post)}},
-  })
-  async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Post, {
-            title: 'NewPost',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    post: Omit<Post, 'id'>,
-  ): Promise<Post> {
-    return this.postRepository.create(post);
-  }
+
+
 
   @authenticate.skip()
   @get('/posts/count')
@@ -114,7 +107,7 @@ export class PostController {
     },
   })
   async findById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @param.filter(Post, {exclude: 'where'}) filter?: FilterExcludingWhere<Post>
   ): Promise<Post> {
     return this.postRepository.findById(id, filter);
@@ -125,7 +118,7 @@ export class PostController {
     description: 'Post PATCH success',
   })
   async updateById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @requestBody({
       content: {
         'application/json': {
@@ -143,7 +136,7 @@ export class PostController {
     description: 'Post PUT success',
   })
   async replaceById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @requestBody() post: Post,
   ): Promise<void> {
     await this.postRepository.replaceById(id, post);
@@ -153,7 +146,7 @@ export class PostController {
   @response(204, {
     description: 'Post DELETE success',
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
+  async deleteById(@param.path.number('id') id: string): Promise<void> {
     await this.postRepository.deleteById(id);
   }
 }
