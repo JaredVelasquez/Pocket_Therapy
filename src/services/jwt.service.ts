@@ -19,7 +19,6 @@ export class JwtService {
       exp: keys.TOKEN_EXPIRATION_TIME,
       data: {
         UserID: user.userId,
-        ProfileID: user.profileId,
         UserNAME: user.username,
         Role: user.roleId
       }

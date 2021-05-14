@@ -21,7 +21,7 @@ export class UserStrategy implements AuthenticationStrategy {
       throw new HttpErrors[401]("No existe un token en la solicitud.")
     }
     const info = this.authService.VerifyToken(token);
-    const profileData = autheticate(info, '1');
+    const profileData = autheticate(info, '2');
 
     return profileData;
   }

@@ -4,13 +4,13 @@ import {Entity, model, property} from '@loopback/repository';
 export class Comment extends Entity {
   @property({
     type: 'number',
-    required: false,
+    required: true,
     precision: 10,
     scale: 0,
     id: 1,
-    mssql: {columnName: 'comment_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'YES'},
+    mssql: {columnName: 'comment_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
   })
-  commentId?: number;
+  commentId: number;
 
   @property({
     type: 'number',
@@ -22,13 +22,12 @@ export class Comment extends Entity {
   userId: number;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
-    precision: 10,
-    scale: 0,
-    mssql: {columnName: 'post_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
+    length: 50,
+    mssql: {columnName: 'post_id', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
   })
-  postId: number;
+  postId: string;
 
   @property({
     type: 'string',
@@ -52,7 +51,10 @@ export class Comment extends Entity {
   })
   updateAt: string;
 
+  // Define well-known properties here
 
+  // Indexer property to allow additional data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
   constructor(data?: Partial<Comment>) {
@@ -61,6 +63,7 @@ export class Comment extends Entity {
 }
 
 export interface CommentRelations {
+  // describe navigational properties here
 }
 
 export type CommentWithRelations = Comment & CommentRelations;

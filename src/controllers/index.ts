@@ -3,7 +3,6 @@ export * from './comment.controller';
 export * from './comunity.controller';
 export * from './contact.controller';
 export * from './hashtag.controller';
-export * from './ping.controller';
 export * from './post.controller';
 export * from './preferences.controller';
 export * from './roles.controller';

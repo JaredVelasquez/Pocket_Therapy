@@ -1,14 +1,13 @@
 import {HttpErrors} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 
-export const autheticate = async (info: any, role: string) => {
+export const autheticate = async (info: any, role: any) => {
 
-  const {UserID, ProfileID, UserNAME, Role} = info;
+  const {UserID, UserNAME, Role} = info.data;
   if (info) {
-    if (Role === role) {
+    if (Role == role) {
       const profile: UserProfile = Object.assign({
         userid: UserID,
-        profileid: ProfileID,
         username: UserNAME,
         role: Role,
       });
