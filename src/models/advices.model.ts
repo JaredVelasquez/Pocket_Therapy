@@ -56,10 +56,6 @@ export class Advices extends Entity {
   })
   updatedAt?: string;
 
-  // Define well-known properties here
-
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
   constructor(data?: Partial<Advices>) {
@@ -68,7 +64,6 @@ export class Advices extends Entity {
 }
 
 export interface AdvicesRelations {
-  // describe navigational properties here
 }
 
 export type AdvicesWithRelations = Advices & AdvicesRelations;
