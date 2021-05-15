@@ -13,7 +13,7 @@ import {
 
 
   patch,
-
+  post,
 
 
 
@@ -34,16 +34,55 @@ class AddPost {
   updatedAt: string;
 }
 
+
 @authenticate('admin', 'user')
 export class PostController {
   constructor(
+
     @repository(PostRepository)
     public postRepository: PostRepository,
     @repository(ComunityRepository)
     public comunityRepository: ComunityRepository,
+
   ) { }
 
+  @post('/add-post', {
+    responses: {
+      '200': {
 
+        description: 'Add post of Usert on Community'
+      }
+    }
+  })
+  async login(
+    @requestBody() addpost: AddPost
+  ): Promise<object> {
+    let postId = shortid.generate();
+
+    let postModel = {
+      postId: postId,
+      contentPost: addpost.contentPost,
+      createdAt: addpost.createdAt,
+      updatedAt: addpost.updatedAt
+    };
+
+    let post = await this.postRepository.create(postModel);
+
+    let CommunityModel: any = {
+      hashtagId: addpost.hashtagid,
+      postId: postId,
+      userId: addpost.userid,
+      likeacnt: 0,
+      comentcnt: 0,
+
+      createdAt: addpost.createdAt,
+      updatedAt: addpost.updatedAt
+    };
+
+    let Community = await this.comunityRepository.create(CommunityModel);
+
+    return post;
+  }
 
 
   @authenticate.skip()
@@ -56,6 +95,7 @@ export class PostController {
     @param.where(Post) where?: Where<Post>,
   ): Promise<Count> {
     return this.postRepository.count(where);
+
   }
 
   @authenticate.skip()
@@ -87,6 +127,7 @@ export class PostController {
       content: {
         'application/json': {
           schema: getModelSchemaRef(Post, {partial: true}),
+
         },
       },
     })
@@ -111,6 +152,7 @@ export class PostController {
     @param.filter(Post, {exclude: 'where'}) filter?: FilterExcludingWhere<Post>
   ): Promise<Post> {
     return this.postRepository.findById(id, filter);
+
   }
 
   @patch('/posts/{id}')
@@ -129,6 +171,7 @@ export class PostController {
     post: Post,
   ): Promise<void> {
     await this.postRepository.updateById(id, post);
+
   }
 
   @put('/posts/{id}')
@@ -140,6 +183,7 @@ export class PostController {
     @requestBody() post: Post,
   ): Promise<void> {
     await this.postRepository.replaceById(id, post);
+
   }
 
   @del('/posts/{id}')
@@ -148,5 +192,6 @@ export class PostController {
   })
   async deleteById(@param.path.number('id') id: string): Promise<void> {
     await this.postRepository.deleteById(id);
+
   }
 }
