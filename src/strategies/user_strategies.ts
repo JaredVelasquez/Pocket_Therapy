@@ -3,6 +3,7 @@ import {service} from '@loopback/core';
 import {HttpErrors, Request} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import parseBearerToken from 'parse-bearer-token';
+import {Rol} from '../keys/roles.keys';
 import {JwtService} from '../services/jwt.service';
 import {autheticate} from './autenticate';
 
@@ -21,7 +22,7 @@ export class UserStrategy implements AuthenticationStrategy {
       throw new HttpErrors[401]("No existe un token en la solicitud.")
     }
     const info = this.authService.VerifyToken(token);
-    const profileData = autheticate(info, '2');
+    const profileData = autheticate(info, Rol.User);
 
     return profileData;
   }

@@ -1,27 +1,7 @@
 import {authenticate} from '@loopback/authentication';
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where
-} from '@loopback/repository';
-import {
-  del, get,
-  getModelSchemaRef, param,
-
-
-  patch, post,
-
-
-
-
-  put,
-
-  requestBody,
-  response
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody, response} from '@loopback/rest';
+import {ViewOf} from '../keys/viewOf.keys';
 import {Comunity} from '../models';
 import {ComunityRepository} from '../repositories';
 
@@ -166,7 +146,7 @@ export class ComunityController {
 
   async getView() {
     return await this.comunityRepository.dataSource.execute(
-      `SELECT * FROM dbo.GetCommunityPost`,
+      ViewOf.GetCommunityPost,
     );
   }
 }

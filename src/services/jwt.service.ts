@@ -1,5 +1,6 @@
 import {BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
+import {HttpErrors} from '@loopback/rest';
 import {Servicekeys as keys} from '../keys/services_keys';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
@@ -27,12 +28,12 @@ export class JwtService {
   }
 
   VerifyToken(token: string) {
-    try {
-      let decoded = jsonwebtoken.verify(token, keys.JWT_SECRET_KEY);
+
+    let decoded = jsonwebtoken.verify(token, keys.JWT_SECRET_KEY);
+    if (decoded)
       return decoded;
-    } catch {
-      return null;
-    }
+    else
+      throw new HttpErrors[401]("Token vacio");
   }
 
   async IdentifyToken(username: string, password: string): Promise<User | false> {
