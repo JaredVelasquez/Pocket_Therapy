@@ -13,7 +13,7 @@ GO
 
 CREATE VIEW dbo.GetCommunityPost
 AS
-    SELECT us.username  'Username', ha.name 'Hashtag', po.contentPost 'Content', co.comentcnt'Coment', co.likeacnt'Like'
+    SELECT us.userId  'UserId', us.photoUrl  'Photo', us.username  'Username', ha.name 'Hashtag', po.contentPost 'Content', co.comentcnt'Coment', co.likeacnt'Like'
     FROM [User] us, [Comunity] co, [Hashtag] ha, [Post] po
     WHERE co.user_id = us.user_id and co.post_id = po.post_id and co.hashtag_id = ha.hastag_id
 GO

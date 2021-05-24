@@ -1,27 +1,6 @@
 import {authenticate} from '@loopback/authentication';
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where
-} from '@loopback/repository';
-import {
-  del, get,
-  getModelSchemaRef, param,
-
-
-  patch,
-  post,
-
-
-
-  put,
-
-  requestBody,
-  response
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody, response} from '@loopback/rest';
 import {Post} from '../models';
 import {ComunityRepository, PostRepository} from '../repositories';
 const shortid = require('shortid');
@@ -74,7 +53,6 @@ export class PostController {
       userId: addpost.userid,
       likeacnt: 0,
       comentcnt: 0,
-
       createdAt: addpost.createdAt,
       updatedAt: addpost.updatedAt
     };

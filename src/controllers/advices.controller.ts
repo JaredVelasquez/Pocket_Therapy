@@ -1,30 +1,13 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody, response} from '@loopback/rest';
 import {Advices} from '../models';
 import {AdvicesRepository} from '../repositories';
 
 export class AdvicesController {
   constructor(
     @repository(AdvicesRepository)
-    public advicesRepository : AdvicesRepository,
-  ) {}
+    public advicesRepository: AdvicesRepository,
+  ) { }
 
   @post('/advices')
   @response(200, {

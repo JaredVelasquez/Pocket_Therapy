@@ -1,37 +1,12 @@
 import {authenticate} from '@loopback/authentication';
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where
-} from '@loopback/repository';
-import {
-  del, get,
-  getModelSchemaRef,
-
-
-
-
-
-  HttpErrors, param,
-
-
-  patch, post,
-
-
-
-
-  put,
-
-  requestBody,
-  response
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody, response} from '@loopback/rest';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
 import {EncryptDecrypt} from '../services/encrypt_decrypt.service';
 import {JwtService} from '../services/jwt.service';
+const shortid = require('shortid');
+var sessionstorage = require('sessionstorage');
 
 class Credentials {
   username: string;
@@ -44,14 +19,16 @@ class PasswordResetData {
   newpassword: string;
 }
 
-class ChangePasswordData {
-  id: string;
-  currentPassword: string;
-  newPassword: string;
-}
 
+class ConfirmCode {
+  email: string;
+}
+class SetCode {
+  code: string;
+}
 export class UserController {
   jwtService: JwtService;
+  code: string;
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
@@ -77,10 +54,61 @@ export class UserController {
         token: tk
       }
     } else {
-      throw new HttpErrors[401]("User or Password invalid.");
+      throw new HttpErrors[401]("Usuario o contraseña inválidos.");
     }
   }
 
+  @post('/generate-verify-code', {
+    responses: {
+      '200': {
+        description: 'Codigo de verificacion'
+      }
+    }
+  })
+  async GenerateVerifyCode(
+    @requestBody() confirmCode: ConfirmCode
+  ): Promise<any> {
+    let user = await this.userRepository.findOne({where: {emailprimary: confirmCode.email}});
+    if (!user) {
+      let user = await this.userRepository.findOne({where: {phoneNumber: confirmCode.email}});
+    }
+    if (user) {
+      var timeout = Date.now() + 60000;
+
+      sessionstorage.setItem('timeout_event', timeout);
+      sessionstorage.setItem('code', shortid.generate());
+      return sessionstorage.getItem('code');
+    }
+    throw new HttpErrors[401]("Usuario invalido.");
+
+  }
+
+  @post('/verify-code', {
+    responses: {
+      '200': {
+        description: 'Login for users'
+      }
+    }
+  })
+  async VerifyCode(
+    @requestBody() setCode: SetCode
+  ): Promise<any> {
+
+    if (!setCode.code)
+      throw new HttpErrors[401]("Codigo vacio.");
+
+    if (sessionstorage.getItem('timeout_event') < Date.now()) {
+      sessionstorage.clear();
+      throw new HttpErrors[401]("El codigo expiro.");
+    }
+
+    if (setCode.code != sessionstorage.getItem('code'))
+      throw new HttpErrors[401]("Codigo invalido.");
+
+    if (setCode.code == sessionstorage.getItem('code'))
+      sessionstorage.clear();
+    return true;
+  }
 
   @post('/password-reset', {
     responses: {
@@ -96,7 +124,7 @@ export class UserController {
     if (newpassword) {
       return true;
     }
-    throw new HttpErrors[400]("User not found");
+    throw new HttpErrors[400]("Usuario no encontrado");
   }
 
   @post('/users')
