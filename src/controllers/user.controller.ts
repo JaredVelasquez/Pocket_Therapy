@@ -1,11 +1,13 @@
 import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody, response} from '@loopback/rest';
+import {Servicekeys as keys} from '../keys/services_keys';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
 import {EncryptDecrypt} from '../services/encrypt_decrypt.service';
 import {JwtService} from '../services/jwt.service';
-const shortid = require('shortid');
+import {Notifications} from '../services/notification.service';
 var sessionstorage = require('sessionstorage');
 
 class Credentials {
@@ -13,12 +15,16 @@ class Credentials {
   password: string;
 }
 
-class PasswordResetData {
-  username: string;
-  phonenumber: string;
+class PasswordReset {
+  identificator: string;
   newpassword: string;
 }
 
+class PasswordResetData {
+  identificator: string;
+  IsVerificated: boolean;
+  newpassword: string;
+}
 
 class ConfirmCode {
   email: string;
@@ -32,6 +38,8 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @service(Notifications)
+    public notifications: Notifications,
   ) {
     this.jwtService = new JwtService(this.userRepository);
   }
@@ -69,17 +77,16 @@ export class UserController {
     @requestBody() confirmCode: ConfirmCode
   ): Promise<any> {
     let user = await this.userRepository.findOne({where: {emailprimary: confirmCode.email}});
-    if (!user) {
-      let user = await this.userRepository.findOne({where: {phoneNumber: confirmCode.email}});
-    }
-    if (user) {
-      var timeout = Date.now() + 60000;
+    if (!user)
+      user = await this.userRepository.findOne({where: {phoneNumber: confirmCode.email}});
 
-      sessionstorage.setItem('timeout_event', timeout);
-      sessionstorage.setItem('code', shortid.generate());
-      return sessionstorage.getItem('code');
-    }
-    throw new HttpErrors[401]("Usuario invalido.");
+    if (!user)
+      throw new HttpErrors[401]("Usuario invalido.");
+
+    const verificationCode = this.jwtService.GenerateVerificationCode();
+    this.notifications.EmailNotification(confirmCode.email, verificationCode);
+
+    return verificationCode;
 
   }
 
@@ -97,33 +104,60 @@ export class UserController {
     if (!setCode.code)
       throw new HttpErrors[401]("Codigo vacio.");
 
-    if (sessionstorage.getItem('timeout_event') < Date.now()) {
-      sessionstorage.clear();
-      throw new HttpErrors[401]("El codigo expiro.");
+    if (!sessionstorage.getItem(keys.TIME_OUT_NAME))
+      throw new HttpErrors[401]("No tiene un codigo de verificacion.");
+
+
+    if (sessionstorage.getItem(keys.TIME_OUT_NAME) < Date.now()) {
+      sessionstorage.clear()
+      throw new HttpErrors[400]("El codigo expiro.");
     }
 
-    if (setCode.code != sessionstorage.getItem('code'))
+    if (setCode.code != sessionstorage.getItem(keys.VERIFICATION_CODE_NAME))
       throw new HttpErrors[401]("Codigo invalido.");
 
-    if (setCode.code == sessionstorage.getItem('code'))
-      sessionstorage.clear();
-    return true;
+    if (setCode.code == sessionstorage.getItem(keys.VERIFICATION_CODE_NAME)) {
+      sessionstorage.clear()
+      return true;
+    }
+
   }
+
+  @post('/password-forgotten', {
+    responses: {
+      '200': {
+        description: 'Resset password off acces'
+      }
+    }
+  })
+  async resetpass(
+    @requestBody() passwordResetData: PasswordResetData
+  ): Promise<boolean> {
+    if (!passwordResetData.IsVerificated)
+      throw new HttpErrors[400]("El usuario no esta verificado.");
+
+    let newpassword = await this.jwtService.ResetPassword(passwordResetData.identificator, passwordResetData.newpassword);
+    if (newpassword) {
+      return true;
+    }
+    throw new HttpErrors[400]("Usuario no encontrado");
+  }
+
 
   @post('/password-reset', {
     responses: {
       '200': {
-        description: 'Login for users'
+        description: 'Reset password in profile'
       }
     }
   })
   async reset(
-    @requestBody() passwordResetData: PasswordResetData
+    @requestBody() passwordReset: PasswordReset
   ): Promise<boolean> {
-    let newpassword = await this.jwtService.ResetPassword(passwordResetData.username, passwordResetData.newpassword);
-    if (newpassword) {
+    let newpassword = await this.jwtService.ResetPassword(passwordReset.identificator, passwordReset.newpassword);
+    if (newpassword)
       return true;
-    }
+
     throw new HttpErrors[400]("Usuario no encontrado");
   }
 
@@ -143,10 +177,13 @@ export class UserController {
         },
       },
     })
-    user: Omit<User, 'id'>,
+    user: User,
   ): Promise<User> {
+    let ExistUser = await this.jwtService.VerifyUserRegirterExist(user);
+    if (ExistUser)
+      throw new HttpErrors[400]("Este Usuario contiene informacion previamente registrada (correo, nombre de usuario o numero telefonico). ");
+
     let auxdocpas = user.passwordHash;
-    user.passwordHash = null;
     user.status = "Active";
     user.roleId = 2;
 
@@ -160,6 +197,7 @@ export class UserController {
 
     return u;
   }
+
 
   @get('/users/count')
   @response(200, {
