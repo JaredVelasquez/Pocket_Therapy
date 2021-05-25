@@ -86,7 +86,7 @@ export class UserController {
     const verificationCode = this.jwtService.GenerateVerificationCode();
     this.notifications.EmailNotification(confirmCode.email, verificationCode);
 
-    return verificationCode;
+    return true;
 
   }
 
