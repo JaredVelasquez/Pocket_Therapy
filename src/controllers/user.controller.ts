@@ -143,7 +143,7 @@ export class UserController {
     throw new HttpErrors[400]("Usuario no encontrado");
   }
 
-
+  @authenticate('admin', 'user')
   @post('/password-reset', {
     responses: {
       '200': {
