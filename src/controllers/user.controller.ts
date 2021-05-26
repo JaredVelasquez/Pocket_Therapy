@@ -32,6 +32,14 @@ class ConfirmCode {
 class SetCode {
   code: string;
 }
+class UpdateProfile {
+  urlPhoto: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  phoneNumber: string;
+  emailprimary: string;
+}
 export class UserController {
   jwtService: JwtService;
   code: string;
@@ -42,6 +50,38 @@ export class UserController {
     public notifications: Notifications,
   ) {
     this.jwtService = new JwtService(this.userRepository);
+  }
+
+  @put('/update-profile', {
+    responses: {
+      '200': {
+        description: 'Login for users'
+      }
+    }
+  })
+  async UpdateProfil(
+    @requestBody() updateProfile: UpdateProfile
+  ): Promise<boolean> {
+    let identifyPost = await this.jwtService.VerifyExistUser(updateProfile.emailprimary);
+
+    let update: any = {
+      roleId: identifyPost.roleId,
+      photoUrl: updateProfile.urlPhoto,
+      firstName: updateProfile.firstName,
+      lastName: updateProfile.lastName,
+      emailprimary: updateProfile.emailprimary,
+      phoneNumber: updateProfile.phoneNumber,
+      username: updateProfile.username,
+      passwordHash: identifyPost.passwordHash,
+      status: identifyPost.status,
+      createdAt: identifyPost.createdAt,
+      updatedAt: Date.now()
+
+    }
+
+    this.userRepository.replaceById(identifyPost.userId, update);
+
+    return true;
   }
 
   @post('/login', {
@@ -189,9 +229,6 @@ export class UserController {
 
     let passwordEncripted = new EncryptDecrypt().Encrypt(auxdocpas);
     user.passwordHash = passwordEncripted;
-
-    console.log(`Encript: ${passwordEncripted}`);
-
 
     let u = await this.userRepository.create(user);
 
