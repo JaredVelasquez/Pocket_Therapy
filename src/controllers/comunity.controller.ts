@@ -5,6 +5,10 @@ import {ViewOf} from '../keys/viewOf.keys';
 import {Comunity} from '../models';
 import {ComunityRepository} from '../repositories';
 
+class SetLike {
+  postid: string;
+}
+
 @authenticate('admin', 'user')
 export class ComunityController {
   constructor(
@@ -32,6 +36,37 @@ export class ComunityController {
   ): Promise<Comunity> {
     return this.comunityRepository.create(comunity);
   }
+
+  @put('/new-like', {
+    responses: {
+      '200': {
+        description: 'Set new like'
+      }
+    }
+  })
+  async login(
+    @requestBody() setLike: SetLike
+  ): Promise<boolean> {
+    let identifyPost = await this.comunityRepository.findOne({where: {postId: setLike.postid}});
+    let likesum = identifyPost?.likeacnt;
+    if (likesum) {
+      likesum += 1;
+    }
+    let update: any = {
+      hashtagId: identifyPost?.hashtagId,
+      postId: identifyPost?.postId,
+      userId: identifyPost?.userId,
+      likeacnt: likesum,
+      comentcnt: identifyPost?.comentcnt,
+      createdAt: identifyPost?.createdAt,
+      updatedAt: Date.now()
+    }
+
+    this.comunityRepository.replaceById(identifyPost?.id, update);
+
+    return true;
+  }
+
 
   @authenticate.skip()
   @get('/comunities/count')
