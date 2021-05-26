@@ -52,6 +52,7 @@ export class UserController {
     this.jwtService = new JwtService(this.userRepository);
   }
 
+  @authenticate('admin', 'user')
   @put('/update-profile', {
     responses: {
       '200': {
