@@ -3,43 +3,20 @@ import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody, response} from '@loopback/rest';
 import {Servicekeys as keys} from '../keys/services_keys';
+import {ConfirmCode, Credentials, PasswordReset, PasswordResetData, PostPhoto, SetCode, UpdateProfile} from "../keys/User.models";
 import {User} from '../models';
 import {UserRepository} from '../repositories';
 import {EncryptDecrypt} from '../services/encrypt_decrypt.service';
 import {JwtService} from '../services/jwt.service';
 import {Notifications} from '../services/notification.service';
 var sessionstorage = require('sessionstorage');
+const cloudinary = require('cloudinary');
 
-class Credentials {
-  username: string;
-  password: string;
-}
-
-class PasswordReset {
-  identificator: string;
-  newpassword: string;
-}
-
-class PasswordResetData {
-  identificator: string;
-  IsVerificated: boolean;
-  newpassword: string;
-}
-
-class ConfirmCode {
-  email: string;
-}
-class SetCode {
-  code: string;
-}
-class UpdateProfile {
-  urlPhoto: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  phoneNumber: string;
-  emailprimary: string;
-}
+cloudinary.config({
+  cloud_name: keys.CLOUDINARY_NAME,
+  api_key: keys.CLOUDINARY_API_KEY,
+  api_secret: keys.CLOUDINARY_API_SECRET,
+})
 export class UserController {
   jwtService: JwtService;
   code: string;
@@ -81,6 +58,39 @@ export class UserController {
     }
 
     this.userRepository.replaceById(identifyPost.userId, update);
+
+    return true;
+  }
+
+  @authenticate('admin', 'user')
+  @put('/update-photo', {
+    responses: {
+      '200': {
+        description: 'Login for users'
+      }
+    }
+  })
+  async UpdatePhotoProfile(
+    @requestBody() postPhoto: PostPhoto
+  ): Promise<boolean> {
+    if (!postPhoto.identificator)
+      throw new HttpErrors[401]("No existe identidicador.");
+
+    if (!postPhoto.route)
+      throw new HttpErrors[401]("No selecciono ninguna imagen.");
+
+    const newPhoto = await cloudinary.v2.uploader.upload(postPhoto.route, {
+      upload_preset: 'PocketTherapy'
+    });
+
+    const user = await this.jwtService.VerifyExistUser(postPhoto.identificator);
+    user.photoUrl = newPhoto.url;
+
+    if (!user)
+      throw new HttpErrors[401]("Usuario no valido.");
+
+
+    this.userRepository.replaceById(user.userId, user);
 
     return true;
   }
@@ -231,9 +241,9 @@ export class UserController {
     let passwordEncripted = new EncryptDecrypt().Encrypt(auxdocpas);
     user.passwordHash = passwordEncripted;
 
-    let u = await this.userRepository.create(user);
+    let NewUser = await this.userRepository.create(user);
 
-    return u;
+    return NewUser;
   }
 
 
