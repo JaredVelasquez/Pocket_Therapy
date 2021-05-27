@@ -11,7 +11,6 @@ import {JwtService} from '../services/jwt.service';
 import {Notifications} from '../services/notification.service';
 var sessionstorage = require('sessionstorage');
 const cloudinary = require('cloudinary');
-require('dotenv').config()
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
