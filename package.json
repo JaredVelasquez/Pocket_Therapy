@@ -61,6 +61,7 @@
     "cloudinary": "^1.25.1",
     "codeid": "^1.0.1",
     "crypto-js": "^4.0.0",
+    "dotenv": "^10.0.0",
     "jsonwebtoken": "^8.5.1",
     "local-storage": "^2.0.0",
     "loopback-component-cloudinary": "^0.1.1",
