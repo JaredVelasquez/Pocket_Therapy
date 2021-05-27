@@ -1,7 +1,6 @@
 import {BindingScope, injectable} from '@loopback/context';
 import {Servicekeys as keys} from '../keys/services_keys';
 const sgMail = require('@sendgrid/mail');
-require('dotenv').config()
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class Notifications {
