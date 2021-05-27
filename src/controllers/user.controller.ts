@@ -62,7 +62,6 @@ export class UserController {
     return true;
   }
 
-  @authenticate('admin', 'user')
   @put('/update-photo', {
     responses: {
       '200': {
