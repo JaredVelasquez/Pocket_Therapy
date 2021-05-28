@@ -1,5 +1,3 @@
-
-
 export class Credentials {
   username: string;
   password: string;
@@ -32,6 +30,5 @@ export class UpdateProfile {
 }
 
 export class PostPhoto {
-  route: string;
   identificator: string;
 }
