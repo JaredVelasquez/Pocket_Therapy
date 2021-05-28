@@ -14,6 +14,16 @@ export class JwtService {
     @repository(UserRepository)
     public userRepository: UserRepository
   ) { }
+
+  async CleanImageIdentificator(identificator: string) {
+    identificator = identificator.replace('.jpg', '');
+    identificator = identificator.replace('.jpeg', '');
+    identificator = identificator.replace('.png', '');
+    identificator = identificator.replace('.svg', '');
+
+    return identificator;
+  }
+
   async VerifyUserRegirterExist(userModel: User) {
 
     if (!userModel)
