@@ -49,27 +49,33 @@ export class FileUploadController {
   async personImage(
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @requestBody.file() request: Request,
-  ): Promise<object | false> {
+  ): Promise<any> {
     const route_image = path.join(__dirname, keys.ROUTE_PROFILE_PHOTOS);
     let res = await this.StoreFileToPath(route_image, keys.NAME_PROFILE_PHOTO, request, response, keys.EXTENSIONS_IMAGE);
 
     if (!response.req?.file.filename)
       throw new HttpErrors[401]("No existe identidicador.");
 
+    let identificator = response.req?.file.filename.toString();
+    identificator = await this.jwtService.CleanImageIdentificator(identificator);
+
+    const user = await this.jwtService.VerifyExistUser(identificator);
+
+    if (user.photoPublicId) {
+      cloudinary.uploader.destroy(user.photoPublicId);
+    }
+
     const newPhoto = await cloudinary.v2.uploader.upload(response.req?.file.path, {
       upload_preset: 'PocketTherapy'
     });
-    console.log(response.req?.file.filename.toString());
-    const user = await this.jwtService.VerifyExistUser(response.req?.file.filename.toString());
+
     user.photoUrl = newPhoto.url;
-
-    if (!user)
-      throw new HttpErrors[401]("Usuario no valido.");
+    user.photoPublicId = newPhoto.public_id;
 
 
-    this.userRepository.replaceById(user.userId, user);
+    const update = await this.userRepository.replaceById(user.userId, user);
 
-    return res;
+    return true;
   }
 
 

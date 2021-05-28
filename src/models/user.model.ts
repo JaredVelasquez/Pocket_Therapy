@@ -62,9 +62,9 @@ export class User extends Entity {
   @property({
     type: 'string',
     length: 50,
-    mssql: {columnName: 'twiter', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
+    mssql: {columnName: 'photoPublicId', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'YES'},
   })
-  twiter?: string;
+  photoPublicId?: string;
 
   @property({
     type: 'string',
