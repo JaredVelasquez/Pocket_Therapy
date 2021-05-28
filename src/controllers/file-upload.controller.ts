@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors, post, Request, requestBody, Response, RestBindings} from '@loopback/rest';
@@ -32,6 +33,8 @@ export class FileUploadController {
    * @param response
    * @param request
    */
+
+  @authenticate('admin', 'user')
   @post('/photo-upload', {
     responses: {
       200: {
