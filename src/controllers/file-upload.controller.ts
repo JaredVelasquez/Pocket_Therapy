@@ -78,13 +78,13 @@ export class FileUploadController {
 
     const update = await this.userRepository.replaceById(user.userId, user);
 
-    return true;
+    return user.photoUrl;
   }
 
 
 
   /**
-   * Return a config for multer storage
+   *
    * @param path
    */
   private GetMulterStorageConfig(path: string) {
@@ -102,7 +102,7 @@ export class FileUploadController {
   }
 
   /**
-   * store the file in a specific path
+   *
    * @param storePath
    * @param request
    * @param response
