@@ -10,3 +10,5 @@ export * from './schedule.repository';
 export * from './task.repository';
 export * from './user.repository';
 
+export * from './like.repository';
+export * from './share.repository';

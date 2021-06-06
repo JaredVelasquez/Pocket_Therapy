@@ -28,7 +28,3 @@ export class UpdateProfile {
   phoneNumber: string;
   emailprimary: string;
 }
-
-export class PostPhoto {
-  identificator: string;
-}
