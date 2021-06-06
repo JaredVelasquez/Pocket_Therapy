@@ -4,56 +4,36 @@ import {Entity, model, property} from '@loopback/repository';
 export class Contact extends Entity {
   @property({
     type: 'number',
-    required: false,
+    required: true,
     precision: 10,
     scale: 0,
     id: 1,
-    mssql: {columnName: 'contact_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'YES'},
+    mssql: {columnName: 'contact_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
   })
-  contactId?: number;
+  contactId: number;
 
   @property({
     type: 'number',
     required: true,
     precision: 10,
     scale: 0,
-    mssql: {columnName: 'user_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
+    mssql: {columnName: 'userOwner_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
   })
-  userId: number;
+  userOwnerId: number;
 
   @property({
-    type: 'string',
+    type: 'number',
     required: true,
-    length: 50,
-    mssql: {columnName: 'firstName_contact', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
+    precision: 10,
+    scale: 0,
+    mssql: {columnName: 'userContact_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
   })
-  firstNameContact: string;
+  userContactId: number;
 
-  @property({
-    type: 'string',
-    required: true,
-    length: 50,
-    mssql: {columnName: 'lastName_contact', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
-  })
-  lastNameContact: string;
+  // Define well-known properties here
 
-  @property({
-    type: 'string',
-    required: true,
-    length: 50,
-    mssql: {columnName: 'email_contact', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
-  })
-  emailContact: string;
-
-  @property({
-    type: 'string',
-    required: true,
-    length: 50,
-    mssql: {columnName: 'phoneNumber_contact', dataType: 'nvarchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'NO'},
-  })
-  phoneNumberContact: string;
-
-
+  // Indexer property to allow additional data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
   constructor(data?: Partial<Contact>) {
@@ -62,6 +42,7 @@ export class Contact extends Entity {
 }
 
 export interface ContactRelations {
+  // describe navigational properties here
 }
 
 export type ContactWithRelations = Contact & ContactRelations;

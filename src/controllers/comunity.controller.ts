@@ -3,10 +3,11 @@ import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} fro
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody, response} from '@loopback/rest';
 import {ViewOf} from '../keys/viewOf.keys';
 import {Comunity} from '../models';
-import {ComunityRepository} from '../repositories';
+import {ComunityRepository, LikeRepository} from '../repositories';
 
 class SetLike {
   postid: string;
+  userid: string;
 }
 
 @authenticate('admin', 'user')
@@ -14,6 +15,8 @@ export class ComunityController {
   constructor(
     @repository(ComunityRepository)
     public comunityRepository: ComunityRepository,
+    @repository(LikeRepository)
+    public likeRepository: LikeRepository,
   ) { }
 
   @post('/comunities')
@@ -46,7 +49,7 @@ export class ComunityController {
   })
   async login(
     @requestBody() setLike: SetLike
-  ): Promise<boolean> {
+  ): Promise<object> {
     let identifyPost = await this.comunityRepository.findOne({where: {postId: setLike.postid}});
     let likesum = identifyPost?.likeacnt;
     if (likesum) {
@@ -62,9 +65,16 @@ export class ComunityController {
       updatedAt: Date.now()
     }
 
-    this.comunityRepository.replaceById(identifyPost?.id, update);
+    let newLike: any = {
+      postId: setLike.postid,
+      userId: setLike.userid
+    }
 
-    return true;
+    let updatePost = await this.comunityRepository.replaceById(identifyPost?.id, update);
+
+    let createLike = await this.likeRepository.create(newLike);
+
+    return createLike;
   }
 
 

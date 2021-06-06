@@ -11,3 +11,6 @@ export * from './task.controller';
 export * from './user.controller';
 
 export * from './file-upload.controller';
+export * from './like-controller.controller';
+export * from './like.controller';
+export * from './share.controller';

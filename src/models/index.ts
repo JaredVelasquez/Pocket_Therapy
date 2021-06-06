@@ -10,3 +10,6 @@ export * from './schedule.model';
 export * from './task.model';
 export * from './user.model';
 
+export * from './like.model';
+export * from './share.model';
+export * from './contact.model';
