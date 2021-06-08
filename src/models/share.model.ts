@@ -4,13 +4,13 @@ import {Entity, model, property} from '@loopback/repository';
 export class Share extends Entity {
   @property({
     type: 'number',
-    required: true,
+    required: false,
     precision: 10,
     scale: 0,
     id: 1,
-    mssql: {columnName: 'share_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
+    mssql: {columnName: 'share_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'YES'},
   })
-  shareId: number;
+  shareId?: number;
 
   @property({
     type: 'number',

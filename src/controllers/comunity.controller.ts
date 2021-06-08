@@ -7,7 +7,7 @@ import {ComunityRepository, LikeRepository} from '../repositories';
 
 class SetLike {
   postid: string;
-  userid: string;
+  userid: number;
 }
 
 @authenticate('admin', 'user')
@@ -66,8 +66,8 @@ export class ComunityController {
     }
 
     let newLike: any = {
-      postId: setLike.postid,
-      userId: setLike.userid
+      userId: setLike.userid,
+      postId: setLike.postid
     }
 
     let updatePost = await this.comunityRepository.replaceById(identifyPost?.id, update);
