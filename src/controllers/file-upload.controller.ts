@@ -1,12 +1,14 @@
 import {authenticate} from '@loopback/authentication';
-import {inject} from '@loopback/core';
+import {inject, service} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors, post, Request, requestBody, Response, RestBindings} from '@loopback/rest';
 import multer from 'multer';
 import path from 'path';
 import {Servicekeys as keys} from '../keys/services_keys';
 import {UserRepository} from '../repositories';
+import {ConfigFile} from '../services/ConfigFile.service';
 import {JwtService} from '../services/jwt.service';
+import {VerifyData} from '../services/VerifyData.service';
 const cloudinary = require('cloudinary');
 
 require('dotenv').config()
@@ -25,6 +27,10 @@ export class FileUploadController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @service(ConfigFile)
+    public configFile: ConfigFile,
+    @service(VerifyData)
+    public verifyData: VerifyData,
   ) {
     this.jwtService = new JwtService(this.userRepository);
   }
@@ -60,9 +66,11 @@ export class FileUploadController {
       throw new HttpErrors[401]("No existe identidicador.");
 
     let identificator = response.req?.file.filename.toString();
-    identificator = await this.jwtService.CleanImageIdentificator(identificator);
+    identificator = await this.configFile.CleanImageIdentificator(identificator);
 
-    const user = await this.jwtService.VerifyExistUser(identificator);
+    const user = await this.verifyData.ExistUser(identificator);
+    if (!user)
+      throw new HttpErrors[401]("El usuario no esta registrado");
 
     if (user.photoPublicId) {
       cloudinary.uploader.destroy(user.photoPublicId);

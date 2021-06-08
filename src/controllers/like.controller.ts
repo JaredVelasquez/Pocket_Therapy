@@ -4,27 +4,32 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
+  del, get,
+  getModelSchemaRef, param,
+
+
+  patch, post,
+
+
+
+
   put,
-  del,
+
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
+import {ViewOf} from '../keys/viewOf.keys';
 import {Like} from '../models';
 import {LikeRepository} from '../repositories';
 
 export class LikeController {
   constructor(
     @repository(LikeRepository)
-    public likeRepository : LikeRepository,
-  ) {}
+    public likeRepository: LikeRepository,
+  ) { }
 
   @post('/likes')
   @response(200, {
@@ -146,5 +151,18 @@ export class LikeController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.likeRepository.deleteById(id);
+  }
+
+
+  @get('/likes/get-user-likes/{id}')
+  async vista1(
+    @param.path.number('id') id: number
+  ): Promise<Like> {
+    let datos = await this.getUserLikes(id);
+    return datos;
+  }
+
+  async getUserLikes(id: number) {
+    return await this.likeRepository.dataSource.execute(ViewOf.GetUserLikes + `${id}`);
   }
 }

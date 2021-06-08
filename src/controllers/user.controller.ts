@@ -9,18 +9,25 @@ import {UserRepository} from '../repositories';
 import {EncryptDecrypt} from '../services/encrypt_decrypt.service';
 import {JwtService} from '../services/jwt.service';
 import {Notifications} from '../services/notification.service';
+import {verificationCode} from '../services/VerificationCode.service';
+import {VerifyData} from '../services/VerifyData.service';
+
 var sessionstorage = require('sessionstorage');
 
 export class UserController {
   jwtService: JwtService;
-  code: string;
+  verifyData: VerifyData;
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
     @service(Notifications)
     public notifications: Notifications,
+    @service(verificationCode)
+    public verificationCode: verificationCode,
+
   ) {
-    this.jwtService = new JwtService(this.userRepository);
+    this.jwtService = new JwtService(userRepository);
+    this.verifyData = new VerifyData(userRepository);
   }
 
   @authenticate('admin', 'user')
@@ -34,26 +41,32 @@ export class UserController {
   async UpdateProfil(
     @requestBody() updateProfile: UpdateProfile
   ): Promise<boolean> {
-    let identifyPost = await this.jwtService.VerifyExistUser(updateProfile.emailprimary);
+    let user = await this.verifyData.ExistUser(updateProfile.emailprimary);
+
+    if (!user)
+      throw new HttpErrors[401]("El usuario no esta registrado");
+
+
 
     let update: any = {
-      roleId: identifyPost.roleId,
-      photoUrl: updateProfile.urlPhoto,
+      roleId: user.roleId,
+      photoUrl: user.photoUrl,
       firstName: updateProfile.firstName,
       lastName: updateProfile.lastName,
       emailprimary: updateProfile.emailprimary,
       phoneNumber: updateProfile.phoneNumber,
       username: updateProfile.username,
-      passwordHash: identifyPost.passwordHash,
-      status: identifyPost.status,
-      createdAt: identifyPost.createdAt,
+      passwordHash: user.passwordHash,
+      status: user.status,
+      createdAt: user.createdAt,
       updatedAt: Date.now()
 
     }
-
-    this.userRepository.replaceById(identifyPost.userId, update);
+    let updateProfil = await this.userRepository.replaceById(user.userId, update);
 
     return true;
+
+
   }
 
 
@@ -96,7 +109,7 @@ export class UserController {
     if (!user)
       throw new HttpErrors[401]("Usuario invalido.");
 
-    const verificationCode = this.jwtService.GenerateVerificationCode();
+    const verificationCode = this.verificationCode.Generate();
     this.notifications.EmailNotification(confirmCode.email, verificationCode);
 
     return true;
@@ -192,9 +205,17 @@ export class UserController {
     })
     user: User,
   ): Promise<User> {
-    let ExistUser = await this.jwtService.VerifyUserRegirterExist(user);
+    let ExistUser = await this.verifyData.ExistUser(user.emailPrimary);
     if (ExistUser)
-      throw new HttpErrors[400]("Este Usuario contiene informacion previamente registrada (correo, nombre de usuario o numero telefonico). ");
+      throw new HttpErrors[400]("Correo electronico ya se encuentra registrado.");
+
+    ExistUser = await this.verifyData.ExistUser(user.username);
+    if (ExistUser)
+      throw new HttpErrors[400]("Nombre de usuario ya se encuentra registrado.");
+
+    ExistUser = await this.verifyData.ExistUser(user.phoneNumber);
+    if (ExistUser)
+      throw new HttpErrors[400]("Numero telefonico ya se encuentra registrado.");
 
     let auxdocpas = user.passwordHash;
     user.status = "Active";
