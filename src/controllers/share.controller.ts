@@ -4,27 +4,32 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
+  del, get,
+  getModelSchemaRef, param,
+
+
+  patch, post,
+
+
+
+
   put,
-  del,
+
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
+import {ViewOf} from '../keys/viewOf.keys';
 import {Share} from '../models';
 import {ShareRepository} from '../repositories';
 
 export class ShareController {
   constructor(
     @repository(ShareRepository)
-    public shareRepository : ShareRepository,
-  ) {}
+    public shareRepository: ShareRepository,
+  ) { }
 
   @post('/shares')
   @response(200, {
@@ -146,5 +151,17 @@ export class ShareController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.shareRepository.deleteById(id);
+  }
+
+  @get('/get-shares')
+  async GetShare(): Promise<any> {
+    let datos: any[] = await this.getView();
+    return datos;
+  }
+
+  async getView() {
+    return await this.shareRepository.dataSource.execute(
+      ViewOf.GetShare,
+    );
   }
 }

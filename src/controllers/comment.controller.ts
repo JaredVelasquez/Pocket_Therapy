@@ -22,6 +22,7 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
+import {ViewOf} from '../keys/viewOf.keys';
 import {Comment} from '../models';
 import {CommentRepository} from '../repositories';
 
@@ -155,5 +156,17 @@ export class CommentController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.commentRepository.deleteById(id);
+  }
+
+  @get('/get-comments')
+  async GetComments(): Promise<any> {
+    let datos: any[] = await this.getView();
+    return datos;
+  }
+
+  async getView() {
+    return await this.commentRepository.dataSource.execute(
+      ViewOf.GetComment,
+    );
   }
 }

@@ -22,6 +22,7 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
+import {ViewOf} from '../keys/viewOf.keys';
 import {Contact} from '../models';
 import {ContactRepository} from '../repositories';
 
@@ -155,5 +156,17 @@ export class ContactController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.contactRepository.deleteById(id);
+  }
+
+  @get('/get-contacts')
+  async GetContacts(): Promise<any> {
+    let datos: any[] = await this.getView();
+    return datos;
+  }
+
+  async getView() {
+    return await this.contactRepository.dataSource.execute(
+      ViewOf.GetContact,
+    );
   }
 }
