@@ -168,7 +168,7 @@ export class PostController {
   @response(204, {
     description: 'Post DELETE success',
   })
-  async deleteById(@param.path.number('id') id: string): Promise<void> {
+  async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.postRepository.deleteById(id);
 
   }
