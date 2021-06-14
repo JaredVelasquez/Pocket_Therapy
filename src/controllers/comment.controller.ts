@@ -3,7 +3,7 @@ import {
   Count,
   CountSchema,
   Filter,
-  FilterExcludingWhere,
+
   repository,
   Where
 } from '@loopback/repository';
@@ -24,13 +24,15 @@ import {
 } from '@loopback/rest';
 import {ViewOf} from '../keys/viewOf.keys';
 import {Comment} from '../models';
-import {CommentRepository} from '../repositories';
+import {CommentRepository, PostRepository} from '../repositories';
 
 @authenticate('admin', 'user')
 export class CommentController {
   constructor(
     @repository(CommentRepository)
     public commentRepository: CommentRepository,
+    @repository(PostRepository)
+    public postRepository: PostRepository,
   ) { }
 
   @post('/comments')
@@ -104,7 +106,6 @@ export class CommentController {
     return this.commentRepository.updateAll(comment, where);
   }
 
-  @authenticate.skip()
   @get('/comments/{id}')
   @response(200, {
     description: 'Comment model instance',
@@ -115,10 +116,10 @@ export class CommentController {
     },
   })
   async findById(
-    @param.path.number('id') id: number,
-    @param.filter(Comment, {exclude: 'where'}) filter?: FilterExcludingWhere<Comment>
-  ): Promise<Comment> {
-    return this.commentRepository.findById(id, filter);
+    @param.path.string('id') id: string,
+  ): Promise<Comment[]> {
+
+    return this.commentRepository.find({where: {postId: id}});
   }
 
   @patch('/comments/{id}')
