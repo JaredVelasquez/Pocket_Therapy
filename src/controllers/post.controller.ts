@@ -1,8 +1,8 @@
 import {authenticate} from '@loopback/authentication';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
-import {del, get, getModelSchemaRef, param, patch, post, put, requestBody, response} from '@loopback/rest';
+import {del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody, response} from '@loopback/rest';
 import {Post} from '../models';
-import {ComunityRepository, PostRepository} from '../repositories';
+import {ComunityRepository, LikeRepository, PostRepository} from '../repositories';
 const shortid = require('shortid');
 
 class AddPost {
@@ -22,6 +22,8 @@ export class PostController {
     public postRepository: PostRepository,
     @repository(ComunityRepository)
     public comunityRepository: ComunityRepository,
+    @repository(LikeRepository)
+    public likeRepository: LikeRepository,
 
   ) { }
 
@@ -169,6 +171,11 @@ export class PostController {
     description: 'Post DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
+    let identifyPost = await this.comunityRepository.findOne({where: {postId: id}});
+    if (!identifyPost)
+      throw new HttpErrors[400]("Este post no existe.");
+    await this.likeRepository.deleteAll({where: {postId: id}});
+    await this.comunityRepository.deleteById(identifyPost?.id);
     await this.postRepository.deleteById(id);
 
   }
