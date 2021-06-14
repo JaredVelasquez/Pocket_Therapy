@@ -56,7 +56,6 @@ export class CommentController {
     return this.commentRepository.create(comment);
   }
 
-  @authenticate.skip()
   @get('/comments/count')
   @response(200, {
     description: 'Comment model count',
@@ -68,7 +67,6 @@ export class CommentController {
     return this.commentRepository.count(where);
   }
 
-  @authenticate.skip()
   @get('/comments')
   @response(200, {
     description: 'Array of Comment model instances',
@@ -117,9 +115,9 @@ export class CommentController {
   })
   async findById(
     @param.path.string('id') id: string,
-  ): Promise<Comment[]> {
+  ): Promise<any> {
 
-    return this.commentRepository.find({where: {postId: id}});
+    return await this.commentRepository.dataSource.execute(ViewOf.GetComment + `'${id}'`);
   }
 
   @patch('/comments/{id}')
@@ -157,17 +155,5 @@ export class CommentController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.commentRepository.deleteById(id);
-  }
-
-  @get('/get-comments')
-  async GetComments(): Promise<any> {
-    let datos: any[] = await this.getView();
-    return datos;
-  }
-
-  async getView() {
-    return await this.commentRepository.dataSource.execute(
-      ViewOf.GetComment,
-    );
   }
 }
