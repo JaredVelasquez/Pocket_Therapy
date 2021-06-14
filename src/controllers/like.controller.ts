@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -25,6 +26,7 @@ import {ViewOf} from '../keys/viewOf.keys';
 import {Like} from '../models';
 import {LikeRepository} from '../repositories';
 
+@authenticate('admin', 'user')
 export class LikeController {
   constructor(
     @repository(LikeRepository)
