@@ -9,7 +9,7 @@ import {
 } from '@loopback/repository';
 import {
   del, get,
-  getModelSchemaRef, param,
+  getModelSchemaRef, HttpErrors, param,
 
 
   patch, post,
@@ -51,7 +51,14 @@ export class ContactController {
     })
     contact: Omit<Contact, 'id'>,
   ): Promise<Contact> {
-    return this.contactRepository.create(contact);
+    if (contact.userContactId == contact.userOwnerId)
+      throw new HttpErrors[400]("No puede registrarse a si mismo como contacto.");
+    let ExistContact = await this.contactRepository.findOne({where: {userOwnerId: contact.userOwnerId}} && {where: {userContactId: contact.userContactId}});
+
+    if (ExistContact)
+      throw new HttpErrors[400]("Usted ya registro este contacto.");
+
+    return await this.contactRepository.create(contact);
   }
 
   @authenticate.skip()
