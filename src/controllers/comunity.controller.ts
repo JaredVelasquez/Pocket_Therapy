@@ -51,10 +51,22 @@ export class ComunityController {
     @requestBody() setLike: SetLike
   ): Promise<object> {
     let identifyPost = await this.comunityRepository.findOne({where: {postId: setLike.postid}});
-    let likesum = identifyPost?.likeacnt;
-    if (likesum) {
-      likesum += 1;
+    let ExistLike = await this.likeRepository.findOne({where: {userId: setLike.userid}} && {where: {postId: setLike.postid}});
+    let likesum: any = identifyPost?.likeacnt;
+    let createLike: any;
+    if (ExistLike) {
+      likesum = likesum - 1;
+      await this.likeRepository.deleteById(ExistLike.likeId);
     }
+    if (!ExistLike) {
+      likesum = likesum + 1;
+      let newLike: any = {
+        userId: setLike.userid,
+        postId: setLike.postid
+      }
+      createLike = await this.likeRepository.create(newLike);
+    }
+
     let update: any = {
       hashtagId: identifyPost?.hashtagId,
       postId: identifyPost?.postId,
@@ -65,14 +77,9 @@ export class ComunityController {
       updatedAt: Date.now()
     }
 
-    let newLike: any = {
-      userId: setLike.userid,
-      postId: setLike.postid
-    }
+
 
     let updatePost = await this.comunityRepository.replaceById(identifyPost?.id, update);
-
-    let createLike = await this.likeRepository.create(newLike);
 
     return createLike;
   }

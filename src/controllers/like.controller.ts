@@ -156,7 +156,7 @@ export class LikeController {
   }
 
 
-  @get('/likes/get-user-likes/{id}')
+  @get('/get-user-likes/{id}')
   async vista1(
     @param.path.number('id') id: number
   ): Promise<Like> {

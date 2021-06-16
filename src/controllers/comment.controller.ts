@@ -24,7 +24,7 @@ import {
 } from '@loopback/rest';
 import {ViewOf} from '../keys/viewOf.keys';
 import {Comment} from '../models';
-import {CommentRepository, PostRepository} from '../repositories';
+import {CommentRepository, ComunityRepository, PostRepository} from '../repositories';
 
 @authenticate('admin', 'user')
 export class CommentController {
@@ -33,6 +33,8 @@ export class CommentController {
     public commentRepository: CommentRepository,
     @repository(PostRepository)
     public postRepository: PostRepository,
+    @repository(ComunityRepository)
+    public comunityRepository: ComunityRepository,
   ) { }
 
   @post('/comments')
@@ -53,6 +55,22 @@ export class CommentController {
     })
     comment: Omit<Comment, 'id'>,
   ): Promise<Comment> {
+    let ExistPost = await this.comunityRepository.findOne({where: {postId: comment.postId}});
+    let countComent: any;
+    if (ExistPost)
+      countComent = ExistPost.comentcnt + 1;
+
+    let update: any = {
+      hashtagId: ExistPost?.hashtagId,
+      postId: ExistPost?.postId,
+      userId: ExistPost?.userId,
+      likeacnt: ExistPost?.likeacnt,
+      comentcnt: countComent,
+      createdAt: ExistPost?.createdAt,
+      updatedAt: Date.now()
+    }
+
+    let updatePost = await this.comunityRepository.replaceById(ExistPost?.id, update);
     return this.commentRepository.create(comment);
   }
 
@@ -154,6 +172,24 @@ export class CommentController {
     description: 'Comment DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
+    let identifyComment = await this.commentRepository.findOne({where: {commentId: id}});
+    let ExistPost = await this.comunityRepository.findOne({where: {postId: identifyComment?.postId}});
+    let countComent: any;
+    if (ExistPost)
+      countComent = ExistPost.comentcnt - 1;
+
+    let update: any = {
+      hashtagId: ExistPost?.hashtagId,
+      postId: ExistPost?.postId,
+      userId: ExistPost?.userId,
+      likeacnt: ExistPost?.likeacnt,
+      comentcnt: countComent,
+      createdAt: ExistPost?.createdAt,
+      updatedAt: Date.now()
+    }
+
+    let updatePost = await this.comunityRepository.replaceById(ExistPost?.id, update);
+
     await this.commentRepository.deleteById(id);
   }
 }

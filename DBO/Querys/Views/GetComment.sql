@@ -13,7 +13,7 @@ GO
 
 CREATE VIEW dbo.GetComment
 AS
-  SELECT po.post_id 'PostId', us.user_id  'UserCommentId', us.photoUrl  'PhotoUrl', us.username  'Username', co.contentComment 'ContentComment'
+  SELECT po.post_id 'PostId', us.user_id  'UserCommentId', us.photoUrl  'PhotoUrl', us.username  'Username', co.comment_id 'ContentId', co.contentComment 'ContentComment'
   FROM [User] us, [Comment] co, [Post] po
   WHERE co.user_id = us.user_id and co.post_id = po.post_id
 GO
@@ -21,3 +21,4 @@ GO
 
 SELECT *
 FROM dbo.GetComment
+WHERE PostId = 'jtCEAHj5E'
