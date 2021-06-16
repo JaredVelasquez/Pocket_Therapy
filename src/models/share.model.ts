@@ -34,6 +34,15 @@ export class Share extends Entity {
     required: true,
     precision: 10,
     scale: 0,
+    mssql: {columnName: 'hashtag_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
+  })
+  hashtagId: number;
+
+  @property({
+    type: 'number',
+    required: true,
+    precision: 10,
+    scale: 0,
     mssql: {columnName: 'likecount', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'NO'},
   })
   likecount: number;

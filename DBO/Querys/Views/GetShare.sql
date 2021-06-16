@@ -13,7 +13,7 @@ GO
 
 CREATE VIEW dbo.GetShare
 AS
-  SELECT us.user_id  'UserId', us.photoUrl  'Photo', us.username  'Username', po.post_id 'PostId', ha.name 'Hashtag', po.contentPost 'ContentPost', sh.comentcount 'Coment', sh.likecount 'Like'
+  SELECT us.user_id  'UserId', us.photoUrl  'Photo', us.username  'Username', po.post_id 'PostId', ha.name 'Hashtag', po.contentPost 'Content', sh.comentcount 'Coment', sh.likecount 'Like'
   FROM [User] us, [Share] sh, [Post] po, [Hashtag] ha
   WHERE sh.user_id = us.user_id and sh.post_id = po.post_id and sh.hashtag_id = ha.hastag_id
 GO
