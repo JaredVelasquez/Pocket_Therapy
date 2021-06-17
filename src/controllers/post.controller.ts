@@ -2,7 +2,7 @@ import {authenticate} from '@loopback/authentication';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody, response} from '@loopback/rest';
 import {Post} from '../models';
-import {ComunityRepository, LikeRepository, PostRepository} from '../repositories';
+import {CommentRepository, ComunityRepository, LikeRepository, PostRepository, ShareRepository} from '../repositories';
 const shortid = require('shortid');
 
 class AddPost {
@@ -14,7 +14,7 @@ class AddPost {
 }
 
 
-@authenticate('admin', 'user')
+//@authenticate('admin', 'user')
 export class PostController {
   constructor(
 
@@ -24,6 +24,10 @@ export class PostController {
     public comunityRepository: ComunityRepository,
     @repository(LikeRepository)
     public likeRepository: LikeRepository,
+    @repository(ShareRepository)
+    public shareRepository: ShareRepository,
+    @repository(CommentRepository)
+    public commentRepository: CommentRepository,
 
   ) { }
 
@@ -176,6 +180,8 @@ export class PostController {
       throw new HttpErrors[400]("Este post no existe.");
     await this.likeRepository.deleteAll({where: {postId: id}});
     await this.comunityRepository.deleteById(identifyPost?.id);
+    await this.shareRepository.deleteAll({where: {postId: id}});
+    await this.commentRepository.deleteAll({where: {postId: id}});
     await this.postRepository.deleteById(id);
 
   }
