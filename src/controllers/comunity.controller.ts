@@ -186,6 +186,7 @@ export class ComunityController {
     description: 'Comunity DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
+
     await this.comunityRepository.deleteById(id);
 
   }

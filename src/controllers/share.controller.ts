@@ -1,4 +1,3 @@
-import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -26,7 +25,7 @@ import {ViewOf} from '../keys/viewOf.keys';
 import {Share} from '../models';
 import {ShareRepository} from '../repositories';
 
-@authenticate('admin', 'user')
+//@authenticate('admin', 'user')
 export class ShareController {
   constructor(
     @repository(ShareRepository)
