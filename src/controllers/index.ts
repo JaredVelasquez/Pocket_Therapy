@@ -5,6 +5,7 @@ export * from './contact.controller';
 export * from './file-upload.controller';
 export * from './hashtag.controller';
 export * from './like.controller';
+export * from './ping.controller';
 export * from './post.controller';
 export * from './preferences.controller';
 export * from './roles.controller';

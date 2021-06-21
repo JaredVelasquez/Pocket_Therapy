@@ -17,7 +17,9 @@ export class JwtService {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
-  ) { }
+  ) {
+    this.verifyData = new VerifyData(userRepository);
+  }
 
   createToken(user: User) {
     let token = jsonwebtoken.sign({
