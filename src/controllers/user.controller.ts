@@ -30,7 +30,7 @@ export class UserController {
     this.verifyData = new VerifyData(userRepository);
   }
 
-  @authenticate('admin', 'user')
+  //@authenticate('admin', 'user')
   @put('/update-profile', {
     responses: {
       '200': {
@@ -149,6 +149,7 @@ export class UserController {
 
   }
 
+  @authenticate.skip()
   @post('/password-forgotten', {
     responses: {
       '200': {
