@@ -16,7 +16,8 @@ var sessionstorage = require('sessionstorage');
 
 export class UserController {
   jwtService: JwtService;
-  verifyData: VerifyData;
+
+
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
@@ -24,13 +25,15 @@ export class UserController {
     public notifications: Notifications,
     @service(verificationCode)
     public verificationCode: verificationCode,
+    @service(VerifyData)
+    public verifyData: VerifyData,
 
   ) {
     this.jwtService = new JwtService(userRepository);
     this.verifyData = new VerifyData(userRepository);
   }
 
-  //@authenticate('admin', 'user')
+  @authenticate('admin', 'user')
   @put('/update-profile', {
     responses: {
       '200': {
@@ -206,9 +209,9 @@ export class UserController {
     })
     user: User,
   ): Promise<User> {
-    let ExistUser = await this.verifyData.ExistUser(user.emailPrimary);
+    let ExistUser = await this.verifyData.ExistUser(user.emailprimary);
     if (ExistUser)
-      throw new HttpErrors[400]("Correo electronico ya se encuentra registrado.");
+      throw new HttpErrors[400]("Correo ya se encuentra registrado.");
 
     ExistUser = await this.verifyData.ExistUser(user.username);
     if (ExistUser)
