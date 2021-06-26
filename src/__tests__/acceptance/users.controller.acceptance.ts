@@ -17,7 +17,6 @@ describe('UserController', () => {
 
   it('Verification code generation test', async () => {
     const res = await client.post('/generate-verify-code').send({email: 'jared.velasquez1122@gmail.com'}).expect(200);
-    expect(res.body).to.containEql(Boolean);
   });
 
 
