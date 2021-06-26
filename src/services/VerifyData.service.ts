@@ -12,7 +12,7 @@ export class VerifyData {
     public userRepository: UserRepository
   ) { }
 
-  async ExistUser(identificator: string) {
+  async ExistUser(identificator: any) {
     if (!identificator)
       throw new HttpErrors[401]("No existe identificador");
 
